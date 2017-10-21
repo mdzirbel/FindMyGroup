@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1094125415240",
+    "project_id": "firebase-findmygroup"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1094125415240:android:d3a54606dce67f37",
+        "android_client_info": {
+          "package_name": "com.example.matth.findmygroup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1094125415240-sppvma9g9ba8abqo3ogpm1ah8h2b2iia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.matth.findmygroup",
+            "certificate_hash": "01e5a37bb8db0ab4f96c019a21b3dbabf2638d3f"
+          }
+        },
+        {
+          "client_id": "1094125415240-72cfmj0pa2ko47sb2pqldqtk49agk3b8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7VYi3hM4JXHi5xDJUSe7mVkLJLuzCHXU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
