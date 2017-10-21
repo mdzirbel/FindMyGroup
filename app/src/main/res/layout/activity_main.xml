@@ -17,41 +17,15 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
-            android:layout_marginTop="20dp"
-            android:id="@+id/scroll_view">
+            android:id="@+id/groups_scroll_view">
 
-            <LinearLayout
-                android:id="@+id/group1name"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:onClick="groupClick"
+                android:id="@+id/groups_view"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/group1Name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="22sp"
-                    android:text="Group 1 Name" />
-
-                <TextView
-                    android:id="@+id/group1Active"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/group1Name"
-                    android:textSize="15sp"
-                    android:text="3 Active: Matthew, Vyyom, Jacob" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="13dp"
-                    android:background="@android:color/darker_gray"/>
-
-            </LinearLayout>
+            </RelativeLayout>
 
         </ScrollView>
 
