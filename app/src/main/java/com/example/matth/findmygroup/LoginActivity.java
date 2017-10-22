@@ -3,7 +3,9 @@ package com.example.matth.findmygroup;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +28,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
+    private static final String LOGIN_STATUS = "isLoggedIn";
     private static final int RC_SIGN_IN = 9001;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_NETWORK_STATE = 2;
@@ -55,6 +58,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         // Check permissions.
         checkPermissions();
+
+        // Check for login status.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean login = prefs.getBoolean(LOGIN_STATUS, false);
+        if(login) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void checkPermissions() {
@@ -114,8 +125,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signIn();
-                break;
-            // ...
         }
     }
 
@@ -139,6 +148,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             // GoogleSignInAccount acct = result.getSignInAccount();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            prefs.edit().putBoolean(LOGIN_STATUS, true).apply();
             updateUI(true);
         } else {
             // Signed out, show unauthenticated UI.
