@@ -31,14 +31,19 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
             android:configChanges="orientation"
+            android:label="@string/title_activity_main"
             android:screenOrientation="portrait" />
         <activity
             android:name=".SettingsActivity"
-            android:label="Settings"
             android:configChanges="orientation"
+            android:label="Settings"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".CompassActivity"
+            android:label="@string/title_activity_compass"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

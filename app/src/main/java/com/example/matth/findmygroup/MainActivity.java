@@ -5,13 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,7 +15,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     static RelativeLayout compassLayout;
 
     static int groupClicked;
+    static int compassClicked;
     static Map<Integer, String> groups;
     static Map<Integer, Boolean> groupActivity  = new HashMap<Integer, Boolean>();
 
@@ -44,12 +39,11 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_groups:
-                    hideCompass();
                     showGroups();
                     return true;
                 case R.id.navigation_compass:
-                    hideGroups();
-                    showCompass();
+                    Intent intent = new Intent(MainActivity.this, CompassActivity.class);
+                    startActivity(intent);
                     return true;
             }
             return false;
@@ -67,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         groupLayout = (RelativeLayout) findViewById(R.id.group);
-        compassLayout = (RelativeLayout) findViewById(R.id.compass);
 
         groups = getGroups();
 
@@ -133,15 +126,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static void hideCompass() {
-        compassLayout.setVisibility(View.GONE);
-    }
-    static void hideGroups() {
-        groupLayout.setVisibility(View.GONE);
-    }
-    static void showCompass() {
-        compassLayout.setVisibility(View.VISIBLE);
-    }
     static void showGroups() {
         groupLayout.setVisibility(View.VISIBLE);
     }
@@ -232,5 +216,4 @@ public class MainActivity extends AppCompatActivity {
     void sendActive(int id, boolean active) {
 
     }
-
 }
