@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
     class groupClick implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-//            Intent intent = new Intent(MainActivity.this, .class);
-//            startActivity(intent);
+            Intent intent = new Intent(MainActivity.this, GroupActivity.class);
+            startActivity(intent);
         }
     }
 
