@@ -1,52 +1,42 @@
 package com.example.matth.findmygroup;
 
-import android.annotation.TargetApi;
+import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
-
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     /**
-     * Id to identity READ_CONTACTS permission request.
+     * Id to identity permission requests.
      */
-    private static final int REQUEST_READ_CONTACTS = 0;
+    private static final int REQUEST_ACCESS_LOCATION = 1;
+    private static final int REQUEST_NETWORK_STATE = 2;
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private static final String TAG = "SignInActivity";
+    private static final String LOGIN_STATUS = "isLoggedIn";
+    private static final String DIALOG_TITLE = "PERMISSION NEEDED";
+    private static final String DIALOG_MESSAGE = "App needs this permission.";
     private static final int RC_SIGN_IN = 9001;
 
     // UI references.
@@ -72,86 +62,58 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         signInButton.setColorScheme(SignInButton.COLOR_DARK);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
-        // Skip sign in if already signed in.
-        if(mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected()) {
+        // Check permissions.
+        checkPermissions();
+
+        // Check for login status.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean login = prefs.getBoolean(LOGIN_STATUS, false);
+        if(login) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
         }
     }
 
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
+    private void checkPermissions() {
+        int locationPermissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        int networkPermissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_NETWORK_STATE);
+
+        if (locationPermissionCheck == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_NETWORK_STATE},
+                    REQUEST_NETWORK_STATE);
         }
 
-        getLoaderManager().initLoader(0, null, this);
+        if (networkPermissionCheck == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_ACCESS_LOCATION);
+        }
     }
 
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (!shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
+        if (requestCode == REQUEST_NETWORK_STATE) {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(DIALOG_TITLE);
+                builder.setMessage(DIALOG_MESSAGE).setCancelable(false);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
+        if (requestCode == REQUEST_ACCESS_LOCATION) {
+            if (grantResults.length == 1 && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(DIALOG_TITLE);
+                builder.setMessage(DIALOG_MESSAGE).setCancelable(false);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
         }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
     }
 
     @Override
@@ -164,8 +126,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signIn();
-                break;
-            // ...
         }
     }
 
@@ -186,13 +146,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
+            // GoogleSignInAccount acct = result.getSignInAccount();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            prefs.edit().putBoolean(LOGIN_STATUS, true).apply();
             updateUI(true);
         } else {
-            // Signed out, show unauthenticated UI.
             updateUI(false);
         }
     }
@@ -205,19 +164,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 startActivity(intent);
             }
         } else {
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("SIGN-IN FAILED");
+            builder.setMessage("Unable to authenticate account.").setCancelable(false);
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         }
-    }
-
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
     }
 }
 
