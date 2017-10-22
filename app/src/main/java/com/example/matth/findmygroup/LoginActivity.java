@@ -79,6 +79,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
        }
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 
     private void checkPermissions() {
@@ -171,11 +173,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 startActivity(intent);
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("SIGN-IN FAILED");
-            builder.setMessage("Unable to authenticate account.").setCancelable(false);
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setTitle("SIGN-IN FAILED");
+//            builder.setMessage("Unable to authenticate account.").setCancelable(false);
+//            AlertDialog alertDialog = builder.create();
+//            alertDialog.show();
         }
     }
 }

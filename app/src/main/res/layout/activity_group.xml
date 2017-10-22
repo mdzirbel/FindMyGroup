@@ -8,6 +8,39 @@
     android:orientation="vertical"
     tools:context="com.example.matth.findmygroup.GroupActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
 
+        <TextView
+            android:id="@+id/activePlayers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/inactivePlayers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_below="@+id/activePlayers"
+            android:layout_marginTop="15dp"
+            android:textSize="20sp"
+            android:text="TextView" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="Leave" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
