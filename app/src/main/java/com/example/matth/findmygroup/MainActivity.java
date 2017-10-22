@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         groupLayout.setVisibility(View.VISIBLE);
     }
 
+    //Groups stuff
     void makeGroups(String[] groups) {
         for (int i=1;i<=groups.length;i++) {
             makeGroup(groups[i-1],i);
@@ -173,5 +174,7 @@ public class MainActivity extends AppCompatActivity {
         String temp[] = {"Team","Fam","Group","Friends","Enemies"};
         return temp;
     }
+
+    // Compass stuff
 
 }
