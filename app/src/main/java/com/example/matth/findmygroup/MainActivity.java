@@ -19,16 +19,24 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 
     static RelativeLayout groupLayout;
     static RelativeLayout compassLayout;
 
-    static String roleClicked;
-
+    static int groupClicked;
+    static Map<Integer, String> groups;
+    static Map<Integer, Boolean> groupActivity  = new HashMap<Integer, Boolean>();
 
     int width;
     int height;
+
+    String red = "#ff0000";
+    String green = "#00ff00";
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -49,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
+    // Stops the back button
+    @Override
+    public void onBackPressed() {}
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         groupLayout = (RelativeLayout) findViewById(R.id.group);
         compassLayout = (RelativeLayout) findViewById(R.id.compass);
 
-        String groups[] = getGroupsFromMemory();
+        groups = getGroups();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -92,10 +104,30 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
+    class toggleClick implements View.OnClickListener {
+        int id;
+        public toggleClick(int id)
+        {
+            this.id = id;
+        }
+        @Override
+        public void onClick(View v) {
+            boolean active = groupActivity.get(id);
+            if (active) {
+                sendActive(id, false);
+                v.setBackgroundColor(Color.parseColor(red));
+            }
+            else {
+                sendActive(id, true);
+                v.setBackgroundColor(Color.parseColor(green));
+            }
+            groupActivity.put(id, !active);
+        }
+    }
     class groupClick implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            roleClicked = "5";
+            groupClicked = (int) findViewById(view.getId()).getTag();
             Intent intent = new Intent(MainActivity.this, GroupActivity.class);
             startActivity(intent);
         }
@@ -114,24 +146,27 @@ public class MainActivity extends AppCompatActivity {
         groupLayout.setVisibility(View.VISIBLE);
     }
 
-    //Groups stuff
-    void makeGroups(String[] groups) {
-        for (int i=1;i<=groups.length;i++) {
-            makeGroup(groups[i-1],i);
+    void makeGroups(Map<Integer, String> groups) {
+        for (int i=1;i<=groups.size();i++) {
+            String name = (String) groups.values().toArray()[i-1];
+            Integer id = (Integer) groups.keySet().toArray()[i-1];
+            makeGroup(name,id,i);
         }
     }
-    void makeGroup(String name, int number) {
-        // Id's are: groupLayout = number*10, groupName = number*10+1, groupActive = number*10+2 spacerBar = number*1+3
+    void makeGroup(String name, int id, int number) {
+        // IDs are: groupLayout=number*10, groupName=number*10+1, groupActive=number*10+2 spacerBar=number*10+3, toggle=number*10+4
         // number indexes from 1 to prevent overlap with other 0 indexes
-        RelativeLayout groupLayout = makeGroupLayout(number);
-        TextView groupName = makeGroupName(name, number, groupLayout);
+        RelativeLayout groupLayout = makeGroupLayout(number, id);
+        makeGroupName(name, number, groupLayout);
         makeGroupPeople(number, groupLayout);
         makeSpacer(number, groupLayout);
+        makeToggle(number, id);
     }
-    RelativeLayout makeGroupLayout(int number) {
+    RelativeLayout makeGroupLayout(int number, int id) {
         RelativeLayout newGroupLayout = new RelativeLayout(this);
         RelativeLayout groupsView = (RelativeLayout) findViewById(R.id.groups_view);
         newGroupLayout.setId(number*10);
+        newGroupLayout.setTag(id);
         newGroupLayout.setOnClickListener(new groupClick());
         groupsView.addView(newGroupLayout);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newGroupLayout.getLayoutParams();
@@ -139,15 +174,15 @@ public class MainActivity extends AppCompatActivity {
         params.topMargin = 10;
         params.leftMargin = 12;
         params.rightMargin = 12;
+        params.width = (int) (width *.75);
         return newGroupLayout;
     }
-    TextView makeGroupName(String name, int number, RelativeLayout groupLayout) {
+    void makeGroupName(String name, int number, RelativeLayout groupLayout) {
         TextView groupName = new TextView(this);
         groupName.setId(number*10+1);
         groupName.setTextSize(22);
         groupName.setText(name);
         groupLayout.addView(groupName);
-        return groupName;
     }
     void makeGroupPeople(int number, RelativeLayout groupLayout) {
         TextView groupActive = new TextView(this);
@@ -157,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
         groupLayout.addView(groupActive);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) groupActive.getLayoutParams();
         params.addRule(RelativeLayout.BELOW, number*10+1);
-        Log.d("ID: ",number*10+1+"");
     }
     void makeSpacer(int number, RelativeLayout groupLayout) {
         View spacerBar = new View(this);
@@ -169,10 +203,34 @@ public class MainActivity extends AppCompatActivity {
         params.topMargin = 8;
         params.height = 1;
     }
+    void makeToggle(int number, int id) {
+        View newToggle = new View(this);
+        newToggle.setId(number*10+4);
+        newToggle.setTag(id);
+        newToggle.setBackgroundColor(Color.parseColor(red));
+        groupActivity.put(id,false);
+        RelativeLayout parent = (RelativeLayout) findViewById(R.id.groups_view);
+        newToggle.setOnClickListener(new toggleClick(id));
+        parent.addView(newToggle);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newToggle.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_TOP, number*10);
+        params.addRule(RelativeLayout.ALIGN_BOTTOM, number*10);
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params.width = (int) (width * .15);
+        params.rightMargin = 10;
+        params.bottomMargin = 10;
+    }
 
-    String[] getGroupsFromMemory() {
-        String temp[] = {"Team","Fam","Group","Friends","Enemies"};
-        return temp;
+    Map<Integer, String> getGroups() {
+        Map <Integer, String> map = new HashMap<Integer, String>();
+        map.put(0,"Group");
+        map.put(1,"Fam");
+        map.put(2,"Friends");
+        return map;
+    }
+
+    void sendActive(int id, boolean active) {
+
     }
 
     // Compass stuff

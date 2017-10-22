@@ -1,18 +1,18 @@
 package com.example.matth.findmygroup;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 public class GroupActivity extends AppCompatActivity {
 
-    Toolbar mActionBarToolbar;
     TextView activePlayers;
     TextView inactivePlayers;
+
+    String userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +23,7 @@ public class GroupActivity extends AppCompatActivity {
         inactivePlayers = (TextView) findViewById(R.id.inactivePlayers);
 
         try {
-            getSupportActionBar().setTitle(MainActivity.roleClicked);
+            getSupportActionBar().setTitle(MainActivity.groups.get(MainActivity.groupClicked));
         }
         catch (NullPointerException e) {
             Log.d("ERROR",e+"");
@@ -32,12 +32,20 @@ public class GroupActivity extends AppCompatActivity {
         inactivePlayers.setText("Inactive Users:\n"+getInactivePlayers());
 
     }
+    void leaveGroup(View v) {
+        sendLeaveGroup();
+        Intent intent = new Intent(GroupActivity.this, MainActivity.class);
+        startActivity(intent);
+    }
 
     String getActivePlayers() {
         return "hello";
     }
     String getInactivePlayers() {
         return "hello";
+    }
+    void sendLeaveGroup() {
+
     }
 
 }
