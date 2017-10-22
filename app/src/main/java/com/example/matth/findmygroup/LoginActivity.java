@@ -11,7 +11,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -21,7 +23,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via Google.
  */
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
@@ -61,6 +63,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         signInButton.setSize(SignInButton.SIZE_WIDE);
         signInButton.setColorScheme(SignInButton.COLOR_DARK);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) signInButton.getLayoutParams();
+        params.bottomMargin = (int)(displayMetrics.heightPixels * 0.2);
 
         // Check permissions.
         checkPermissions();
