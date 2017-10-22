@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_NETWORK_STATE) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(DIALOG_TITLE);
                 builder.setMessage(DIALOG_MESSAGE).setCancelable(false);
