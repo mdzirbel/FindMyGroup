@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -37,6 +38,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private static final String LOGIN_STATUS = "isLoggedIn";
+    private static final String ACCOUNT_INFO = "accountInfo";
     private static final String DIALOG_TITLE = "PERMISSION NEEDED";
     private static final String DIALOG_MESSAGE = "App needs this permission.";
     private static final int RC_SIGN_IN = 9001;
@@ -75,12 +77,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         // Check for login status.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean login = prefs.getBoolean(LOGIN_STATUS, false);
-       if(login) {
+        if(login) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
-       }
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
+        }
     }
 
     private void checkPermissions() {
@@ -156,8 +156,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private void handleSignInResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
-            // GoogleSignInAccount acct = result.getSignInAccount();
+            GoogleSignInAccount acct = result.getSignInAccount();
+            String acctInfo = acct.getId() + "%" + acct.getDisplayName() + "%"
+                    + acct.getEmail();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            prefs.edit().putString(ACCOUNT_INFO, acctInfo).apply();
             prefs.edit().putBoolean(LOGIN_STATUS, true).apply();
             updateUI(true);
         } else {
@@ -173,11 +176,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 startActivity(intent);
             }
         } else {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//            builder.setTitle("SIGN-IN FAILED");
-//            builder.setMessage("Unable to authenticate account.").setCancelable(false);
-//            AlertDialog alertDialog = builder.create();
-//            alertDialog.show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("SIGN-IN FAILED");
+            builder.setMessage("Unable to authenticate account.").setCancelable(false);
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         }
     }
 }
