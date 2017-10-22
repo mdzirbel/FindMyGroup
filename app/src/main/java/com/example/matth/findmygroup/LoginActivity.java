@@ -68,10 +68,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         // Check for login status.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean login = prefs.getBoolean(LOGIN_STATUS, false);
-        if(login) {
+//        if(login) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
-        }
+//        }
     }
 
     private void checkPermissions() {
