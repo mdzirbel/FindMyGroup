@@ -32,7 +32,6 @@
 
     </RelativeLayout>
 
-
     <RelativeLayout
         android:id="@+id/compass"
         android:visibility="gone"
