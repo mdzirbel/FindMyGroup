@@ -1,10 +1,12 @@
 package com.example.matth.findmygroup;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -47,12 +49,13 @@ public class MainActivity extends AppCompatActivity {
         groupLayout = (RelativeLayout) findViewById(R.id.group);
         compassLayout = (RelativeLayout) findViewById(R.id.compass);
 
-//        String groups[] = getGroupsFromMemory();
+        String groups[] = getGroupsFromMemory();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        makeGroup("MyGroup");
+        makeGroups(groups);
+
     }
 
     static void hideCompass() {
@@ -68,39 +71,64 @@ public class MainActivity extends AppCompatActivity {
         groupLayout.setVisibility(View.VISIBLE);
     }
 
-    void makeGroup(String name) {
-        RelativeLayout groupLayout = makeGroupLayout(name);
-        TextView groupName = makeGroupName(name, groupLayout);
-        makeGroupPeople(name, groupLayout, groupName);
+    void makeGroups(String[] groups) {
+        for (int i=1;i<=groups.length;i++) {
+            makeGroup(groups[i-1],i);
+        }
     }
-    RelativeLayout makeGroupLayout(String name) {
+    void makeGroup(String name, int number) {
+        // Id's are: groupLayout = number*10, groupName = number*10+1, groupActive = number*10+2 spacerBar = number*1+3
+        // number indexes from 1 to prevent overlap with other 0 indexes
+        RelativeLayout groupLayout = makeGroupLayout(number);
+        TextView groupName = makeGroupName(name, number, groupLayout);
+        makeGroupPeople(number, groupLayout);
+        makeSpacer(number, groupLayout);
+    }
+    RelativeLayout makeGroupLayout(int number) {
         RelativeLayout newGroupLayout = new RelativeLayout(this);
-        newGroupLayout.setTag(name+"layout");
         RelativeLayout groupsView = (RelativeLayout) findViewById(R.id.groups_view);
+        newGroupLayout.setId(number*10);
         groupsView.addView(newGroupLayout);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newGroupLayout.getLayoutParams();
+        params.addRule(RelativeLayout.BELOW, (number-1)*10);
         params.topMargin = 10;
         params.leftMargin = 12;
         params.rightMargin = 12;
         // This still needs an onclick listener
         return newGroupLayout;
     }
-    TextView makeGroupName(String name, RelativeLayout groupLayout) {
+    TextView makeGroupName(String name, int number, RelativeLayout groupLayout) {
         TextView groupName = new TextView(this);
-        groupName.setTag(name+"name");
+        groupName.setId(number*10+1);
         groupName.setTextSize(22);
         groupName.setText(name);
         groupLayout.addView(groupName);
         return groupName;
     }
-    void makeGroupPeople(String name, RelativeLayout groupLayout, TextView groupName) {
+    void makeGroupPeople(int number, RelativeLayout groupLayout) {
         TextView groupActive = new TextView(this);
-        groupActive.setTag(name+"active");
+        groupActive.setId(number*10+2);
         groupActive.setTextSize(15);
         groupActive.setText("Loading Active Members...");
         groupLayout.addView(groupActive);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) groupActive.getLayoutParams();
-        params.addRule(RelativeLayout.BELOW, groupName.getId());
+        params.addRule(RelativeLayout.BELOW, number*10+1);
+        Log.d("ID: ",number*10+1+"");
+    }
+    void makeSpacer(int number, RelativeLayout groupLayout) {
+        View spacerBar = new View(this);
+        spacerBar.setId(number*10+3);
+        spacerBar.setBackgroundColor(Color.parseColor("#404040"));
+        groupLayout.addView(spacerBar);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) spacerBar.getLayoutParams();
+        params.addRule(RelativeLayout.BELOW, number*10+2);
+        params.topMargin = 8;
+        params.height = 1;
+    }
+
+    String[] getGroupsFromMemory() {
+        String temp[] = {"Team","Fam","Group","Friends","Enemies"};
+        return temp;
     }
 
 }

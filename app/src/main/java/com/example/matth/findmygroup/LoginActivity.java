@@ -1,7 +1,6 @@
 package com.example.matth.findmygroup;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -9,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -26,12 +26,18 @@ import com.google.android.gms.common.api.GoogleApiClient;
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     /**
+     * Id to identity permission requests.
+     */
+    private static final int REQUEST_ACCESS_LOCATION = 1;
+    private static final int REQUEST_NETWORK_STATE = 2;
+
+    /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private static final String LOGIN_STATUS = "isLoggedIn";
+    private static final String DIALOG_TITLE = "PERMISSION NEEDED";
+    private static final String DIALOG_MESSAGE = "App needs this permission.";
     private static final int RC_SIGN_IN = 9001;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_NETWORK_STATE = 2;
 
     // UI references.
     private GoogleApiClient mGoogleApiClient;
@@ -69,48 +75,43 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     private void checkPermissions() {
-        int fineLocationPermissionCheck = ContextCompat.checkSelfPermission(this,
+        int locationPermissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
-
-        if(fineLocationPermissionCheck == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-
-        int networkStatePermissionCheck = ContextCompat.checkSelfPermission(this,
+        int networkPermissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_NETWORK_STATE);
 
-        if(networkStatePermissionCheck == PackageManager.PERMISSION_DENIED) {
+        if (locationPermissionCheck == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_NETWORK_STATE},
-                    MY_PERMISSIONS_REQUEST_ACCESS_NETWORK_STATE);
+                    REQUEST_NETWORK_STATE);
+        }
+
+        if (networkPermissionCheck == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_ACCESS_LOCATION);
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    ProgressDialog pd = ProgressDialog.show(this,"PERMISSION DENIED",
-                            "App cannot continue without location permissions.");
-                    pd.show();
-                }
-                return;
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_NETWORK_STATE) {
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(DIALOG_TITLE);
+                builder.setMessage(DIALOG_MESSAGE).setCancelable(false);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
-
-            case MY_PERMISSIONS_REQUEST_ACCESS_NETWORK_STATE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[1] == PackageManager.PERMISSION_DENIED) {
-                    ProgressDialog pd = ProgressDialog.show(this,"PERMISSION DENIED",
-                            "App cannot continue without network permissions.");
-                    pd.show();
-                }
+        }
+        if (requestCode == REQUEST_ACCESS_LOCATION) {
+            if (grantResults.length == 1 && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(DIALOG_TITLE);
+                builder.setMessage(DIALOG_MESSAGE).setCancelable(false);
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         }
     }
@@ -146,13 +147,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private void handleSignInResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
             // GoogleSignInAccount acct = result.getSignInAccount();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             prefs.edit().putBoolean(LOGIN_STATUS, true).apply();
             updateUI(true);
         } else {
-            // Signed out, show unauthenticated UI.
             updateUI(false);
         }
     }
@@ -160,10 +159,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private void updateUI(boolean signedIn) {
         if (signedIn) {
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            if (mGoogleApiClient.isConnected()) {
+            if(mGoogleApiClient.isConnected()) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             }
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("SIGN-IN FAILED");
+            builder.setMessage("Unable to authenticate account.").setCancelable(false);
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         }
     }
 }
+
