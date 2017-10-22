@@ -1,5 +1,6 @@
 package com.example.matth.findmygroup;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -58,6 +59,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    class groupClick implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+//            Intent intent = new Intent(MainActivity.this, .class);
+//            startActivity(intent);
+        }
+    }
+
     static void hideCompass() {
         compassLayout.setVisibility(View.GONE);
     }
@@ -88,13 +97,13 @@ public class MainActivity extends AppCompatActivity {
         RelativeLayout newGroupLayout = new RelativeLayout(this);
         RelativeLayout groupsView = (RelativeLayout) findViewById(R.id.groups_view);
         newGroupLayout.setId(number*10);
+        newGroupLayout.setOnClickListener(new groupClick());
         groupsView.addView(newGroupLayout);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) newGroupLayout.getLayoutParams();
         params.addRule(RelativeLayout.BELOW, (number-1)*10);
         params.topMargin = 10;
         params.leftMargin = 12;
         params.rightMargin = 12;
-        // This still needs an onclick listener
         return newGroupLayout;
     }
     TextView makeGroupName(String name, int number, RelativeLayout groupLayout) {
