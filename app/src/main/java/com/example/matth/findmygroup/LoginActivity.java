@@ -73,10 +73,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
         // Skip sign in if already signed in.
-        if(mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected()) {
+        //if(mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected()) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
-        }
+        //}
     }
 
     private void populateAutoComplete() {
