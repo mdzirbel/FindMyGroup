@@ -19,8 +19,8 @@ public class GroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
 
-        activePlayers = (TextView) findViewById(R.id.activePlayers);
-        inactivePlayers = (TextView) findViewById(R.id.inactivePlayers);
+        activePlayers =  findViewById(R.id.activePlayers);
+        inactivePlayers = findViewById(R.id.inactivePlayers);
 
         try {
             getSupportActionBar().setTitle(MainActivity.groups.get(MainActivity.groupClicked));

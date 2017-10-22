@@ -12,4 +12,5 @@
     <string name="sign_out">Sign Out</string>
     <string name="title_activity_compass">CompassActivity</string>
     <string name="compass_text">Placeholder</string>
+    <string name="location">Get Location Now</string>
 </resources>

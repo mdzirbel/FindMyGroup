@@ -51,6 +51,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Get permissions.
+        getPermissions();
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -71,9 +74,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) signInButton.getLayoutParams();
         params.bottomMargin = (int)(displayMetrics.heightPixels * 0.2);
 
-        // Check permissions.
-        checkPermissions();
-
         // Check for login status.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean login = prefs.getBoolean(LOGIN_STATUS, false);
@@ -83,23 +83,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
-    private void checkPermissions() {
-        int locationPermissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        int networkPermissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_NETWORK_STATE);
+    private void getPermissions() {
 
-        if (locationPermissionCheck == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_NETWORK_STATE},
-                    REQUEST_NETWORK_STATE);
-        }
-
-        if (networkPermissionCheck == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_ACCESS_LOCATION);
-        }
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_NETWORK_STATE},
+                REQUEST_NETWORK_STATE);
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                REQUEST_ACCESS_LOCATION);
     }
 
     @Override
