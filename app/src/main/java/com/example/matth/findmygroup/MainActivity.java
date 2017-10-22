@@ -5,7 +5,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_compass:
                     hideGroups();
-                      showCompass();
+                    showCompass();
                     return true;
             }
             return false;
@@ -93,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
         boolean result = false;
         switch (item.getItemId()) {
             case R.id.menu_settings:
-//                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
                 result = true;
         }
         return result;
