@@ -1,5 +1,6 @@
 package com.example.matth.findmygroup;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import im.delight.android.location.SimpleLocation;
 
@@ -34,23 +36,31 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         makeList();
 
-        location = new SimpleLocation(this);
-
-        findViewById(R.id.locBtn).setOnClickListener(this);
+        Button btn = (Button)findViewById(R.id.locBtn);
+        btn.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.locBtn:
+                getLocation();
+        }
+    }
+
+    public void getLocation() {
+        Context context = this;
+        location = new SimpleLocation(context, false);
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         double altitude = location.getAltitude();
 
-        listItems[LISTLENGTH] = String.valueOf(latitude);
-        listItems[LISTLENGTH + 1] = String.valueOf(longitude);
-        listItems[LISTLENGTH + 2] = String.valueOf(altitude);
+        String s = "Lat = " + String.valueOf(latitude) + ";  " +
+                "Long = " + String.valueOf(longitude) + ";  " +
+                "Altitude = " + String.valueOf(altitude);
 
-        makeList();
-
+        Toast t = Toast.makeText(this, s, Toast.LENGTH_LONG);
+        t.show();
     }
 
     private void makeList() {

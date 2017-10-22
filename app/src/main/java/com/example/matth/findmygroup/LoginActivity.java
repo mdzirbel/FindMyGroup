@@ -31,8 +31,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     /**
      * Id to identity permission requests.
      */
-    private static final int REQUEST_ACCESS_LOCATION = 1;
-    private static final int REQUEST_NETWORK_STATE = 2;
+    private static final int REQUEST_ACCESS_LOCATION = 0;
+    private static final int REQUEST_NETWORK_STATE = 1;
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -52,7 +52,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_login);
 
         // Get permissions.
-        getPermissions();
+        getLocationPermission();
+//        getNetworkPermission();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -81,25 +82,25 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
         }
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
     }
 
-    private void getPermissions() {
-
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_NETWORK_STATE},
-                REQUEST_NETWORK_STATE);
+    private void getLocationPermission() {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_ACCESS_LOCATION);
     }
 
+//    private void getNetworkPermission() {
+//        ActivityCompat.requestPermissions(this,
+//                new String[]{Manifest.permission.ACCESS_NETWORK_STATE},
+//                REQUEST_NETWORK_STATE);
+//    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_NETWORK_STATE) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(DIALOG_TITLE);
                 builder.setMessage(DIALOG_MESSAGE).setCancelable(false);
@@ -108,7 +109,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         }
         if (requestCode == REQUEST_ACCESS_LOCATION) {
-            if (grantResults.length == 1 && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(DIALOG_TITLE);
                 builder.setMessage(DIALOG_MESSAGE).setCancelable(false);
