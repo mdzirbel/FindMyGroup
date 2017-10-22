@@ -20,9 +20,8 @@ public class MainActivity extends AppCompatActivity {
     static RelativeLayout groupLayout;
     static RelativeLayout compassLayout;
 
-    DisplayMetrics displayMetrics = new DisplayMetrics();
-    int width = displayMetrics.widthPixels;
-    int height = displayMetrics.heightPixels;
+    int width;
+    int height;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -51,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
         compassLayout = (RelativeLayout) findViewById(R.id.compass);
 
         String groups[] = getGroupsFromMemory();
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        width = displayMetrics.widthPixels;
+        height = displayMetrics.heightPixels;
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
